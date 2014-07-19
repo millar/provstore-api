@@ -12,6 +12,10 @@ class BundleManager(object):
         if not self._bundles:
             self.refresh()
 
+        if key not in self._bundles:
+            from provstore.api import NotFoundException
+            raise NotFoundException()
+
         return self._bundles[key]
 
 

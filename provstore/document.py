@@ -34,6 +34,17 @@ class Document(object):
         self._prov = None
 
 
+    def __eq__(self, other):
+        if not isinstance(other, Document):
+            return False
+
+        return self._api == other._api and self._id == other._id
+
+
+    def __ne__(self, other):
+        return self == other
+
+
     # Abstract methods
 
     def create(self, prov_document, prov_format=None, refresh=False, **props):

@@ -1,4 +1,4 @@
-provstore [![Build Status](https://travis-ci.org/millar/provstore-api.svg?branch=master)](https://travis-ci.org/millar/provstore-api)
+provstore [![Build Status](https://travis-ci.org/millar/provstore-api.svg?branch=master)](https://travis-ci.org/millar/provstore-api) [![Coverage Status](https://coveralls.io/repos/millar/provstore-api/badge.png)](https://coveralls.io/r/millar/provstore-api)
 =========
 
 Client for the [ProvStore](https://provenance.ecs.soton.ac.uk/store/)'s [API](https://provenance.ecs.soton.ac.uk/store/help/api/).

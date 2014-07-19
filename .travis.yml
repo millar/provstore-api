@@ -5,7 +5,11 @@ python:
 # Install packages
 install:
   - pip install prov requests
+  - pip install coverage coveralls
 
 # Run test
 script:
-  - python setup.py test
+  - coverage run setup.py test
+
+after_success:
+  - coveralls

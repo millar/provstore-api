@@ -6,6 +6,10 @@ from prov.model import ProvDocument
 from provstore.document import Document
 
 
+class NotFoundException(Exception):
+    pass
+
+
 """
   Usage:
 
@@ -52,6 +56,17 @@ class Api(object):
             self._api_key = os.environ.get('PROVSTORE_API_KEY', None)
 
 
+    def __eq__(self, other):
+        if not isinstance(other, Api):
+            return False
+
+        return self.base_url == other.base_url
+
+
+    def __ne__(self, other):
+        return self == other
+
+
     @property
     def document(self):
         return Document(self)
@@ -74,8 +89,11 @@ class Api(object):
 
         # TODO: Catch error reponses and raise our own exceptions
 
-        # Fallback
-        r.raise_for_status()
+        if r.status_code == 404:
+            raise NotFoundException()
+        else:
+          # Fallback
+          r.raise_for_status()
 
         return r
 

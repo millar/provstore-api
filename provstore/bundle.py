@@ -1,4 +1,3 @@
-
 from prov.model import ProvDocument, parse_xsd_datetime
 
 class Bundle(object):
