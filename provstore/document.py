@@ -7,15 +7,15 @@ class DocumentException(Exception):
     pass
 
 class AbstractDocumentException(DocumentException):
-    def __init__():
+    def __init__(self):
         self.message = "Unsaved documents cannot be read"
 
 class EmptyDocumentException(DocumentException):
-    def __init__():
+    def __init__(self):
         self.message = "There is no data associated with this document"
 
 class ImmutableDocumentException(DocumentException):
-    def __init__():
+    def __init__(self):
         self.message = "Cannot change document instance reference"
 
 
@@ -69,6 +69,8 @@ class Document(object):
         if not self.abstract:
             raise ImmutableDocumentException()
         self._id = document_id
+
+        return self
 
 
     def get(self, document_id):
@@ -165,7 +167,7 @@ class Document(object):
         if self._name:
             return self._name
         elif not self.abstract:
-            return self.read_meta().name
+            return self.read_meta()._name
 
         raise EmptyDocumentException()
 
@@ -175,7 +177,7 @@ class Document(object):
         if self._public:
             return self._public
         elif not self.abstract:
-            return self.read_meta().public
+            return self.read_meta()._public
 
         raise EmptyDocumentException()
 
@@ -185,7 +187,7 @@ class Document(object):
         if self._owner:
             return self._owner
         elif not self.abstract:
-            return self.read_meta().owner
+            return self.read_meta()._owner
 
         raise EmptyDocumentException()
 
@@ -195,7 +197,7 @@ class Document(object):
         if self._created_at:
             return self._created_at
         elif not self.abstract:
-            return self.read_meta().created_at
+            return self.read_meta()._created_at
 
         raise EmptyDocumentException()
 
@@ -205,7 +207,7 @@ class Document(object):
         if self._views:
             return self._views
         elif not self.abstract:
-            return self.read_meta().views
+            return self.read_meta()._views
 
         raise EmptyDocumentException()
 

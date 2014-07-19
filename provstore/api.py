@@ -145,7 +145,7 @@ class Api(object):
         r = self._request('post', self.base_url + "/documents/%i/bundles/" % document_id,
                           data=json.dumps({
                             'content': json.loads(prov_bundle),
-                            'rec_id':  str(identifier)
+                            'rec_id':  unicode(identifier)
                           }),
                           headers=headers)
 
