@@ -120,18 +120,12 @@ class Api(object):
 
         r = self._request('post', self.base_url + "/documents/%i/bundles/" % document_id,
                           data=json.dumps({
-                            'content': prov_bundle,
+                            'content': json.loads(prov_bundle),
                             'rec_id':  identifier
                           }),
                           headers=headers)
-        print self.base_url + "/documents/%i/bundles/" % document_id
-        print json.dumps({
-          'content': prov_bundle,
-          'rec_id':  identifier
-        })
 
-        print r.content
-        # return r.json()
+        return True
 
 
     def delete_document(self, document_id):
