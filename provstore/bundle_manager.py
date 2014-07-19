@@ -19,6 +19,20 @@ class BundleManager(object):
         self._document.add_bundle(prov_bundle, key)
 
 
+    def __iter__(self):
+        if not self._bundles:
+            self.refresh()
+
+        return self._bundles.itervalues()
+
+
+    def __len__(self):
+        if self._bundles:
+            return len(self._bundles)
+        else:
+            return 0
+
+
     def refresh(self):
         self._bundles = {}
 

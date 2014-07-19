@@ -1,7 +1,6 @@
 import os
 import unittest
 
-from prov.model import ProvDocument
 from provstore.api import Api
 import provstore.tests.examples as examples
 

@@ -17,6 +17,12 @@ class Bundle(object):
     def created_at(self):
         return self._created_at
 
+
+    @property
+    def identifier(self):
+        return self._identifier
+
+
     @property
     def prov(self):
         if not self._prov:
