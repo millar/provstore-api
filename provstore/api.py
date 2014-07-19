@@ -128,6 +128,28 @@ class Api(object):
         return True
 
 
+    def get_bundles(self, document_id):
+        r = self._request('get', self.base_url + "/documents/%i/bundles/" % document_id,
+                          headers=self.headers)
+
+        return r.json()['objects']
+
+
+    def get_bundle(self, document_id, bundle_id, prov_format=ProvDocument):
+        if prov_format == ProvDocument:
+            extension = 'json'
+        else:
+            extension = prov_format
+
+        r = self._request('get', self.base_url + "/documents/%i/bundles/%i.%s" % (document_id, bundle_id, extension),
+                          headers=self.headers)
+
+        if prov_format == ProvDocument:
+            return ProvDocument.deserialize(content=r.content)
+        else:
+            return r.content
+
+
     def delete_document(self, document_id):
         r = self._request('delete', self.base_url + "/documents/%i/" % document_id,
                           headers=self.headers)

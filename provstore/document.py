@@ -1,6 +1,6 @@
 import json
-import datetime
 from prov.model import ProvDocument, parse_xsd_datetime
+from provstore.bundle_manager import BundleManager
 
 # Document exceptions
 class DocumentException(Exception):
@@ -111,6 +111,8 @@ class Document(object):
         self._created_at = parse_xsd_datetime(metadata['created_at'])
         self._views = metadata['views_count']
 
+        self._bundles = BundleManager(self._api, self)
+
         return self
 
 
@@ -119,6 +121,14 @@ class Document(object):
             raise AbstractDocumentException()
 
         self._api.add_bundle(self.id, prov_bundle.serialize(), identifier)
+
+
+    @property
+    def bundles(self):
+        if self.abstract:
+            raise AbstractDocumentException()
+
+        return self._bundles
 
 
     def delete(self):
