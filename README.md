@@ -28,6 +28,8 @@ import provstore.tests.examples as examples
 
 but you would use your documents instead
 
+#### Storing documents
+
 ```python
 prov_document = examples.flat_document()
 prov_bundle = examples.flat_document()
@@ -39,7 +41,46 @@ stored_document = api.document.create(prov_document,
                                       public=False)
 
 # => This will store the document and return a ProvStore Document object
+```
 
+#### Retrieving documents
+
+```python
+# Get a document with ID 148 from ProvStore:
+stored_document = api.document.get(148)
+
+# => This will fetch the document and return a ProvStore Document object
+```
+
+#### Deleting documents
+
+```python
+# Delete the document with ID 148 from the store:
+api.document.get(148).delete()
+```
+
+#### Adding bundles
+
+```python
+# Get document with this ID's bundles
+api.document.get(148).add_bundle(prov_bundle, 'ex:bundle-1')
+# or the shorthand:
+api.document.get(148).bundles['ex:bundle-1'] = prov_bundle
+```
+
+#### Iterating over bundles
+```python
+# Get document with this ID's bundles
+for bundle in api.document.get(148).bundles:
+    # print the bundle's identifier
+    print bundle.identifier
+    # the bundle's provenance is at:
+    bundle.prov
+```
+
+
+#### API guidance
+```
 # Document instance has the following API:
 #
 #   property: id(int) -> the document's ID on the Store
