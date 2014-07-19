@@ -65,6 +65,12 @@ class Api(object):
 
     def _request(self, method, *args, **kwargs):
         r = requests.request(method, *args, **kwargs)
+
+        # TODO: Catch error reponses and raise our own exceptions
+
+        # Fallback
+        r.raise_for_status()
+
         return r
 
 
@@ -109,12 +115,15 @@ class Api(object):
 
 
     def add_bundle(self, document_id, prov_bundle, identifier):
+        headers = copy(self.headers)
+        headers.update({'Content-type': 'application/json'})
+
         r = self._request('post', self.base_url + "/documents/%i/bundles/" % document_id,
                           data=json.dumps({
                             'content': prov_bundle,
                             'rec_id':  identifier
                           }),
-                          headers=self.headers)
+                          headers=headers)
         print self.base_url + "/documents/%i/bundles/" % document_id
         print json.dumps({
           'content': prov_bundle,

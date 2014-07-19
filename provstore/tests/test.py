@@ -23,6 +23,8 @@ class ProvStoreAPITests(unittest.TestCase):
         stored_document = self.api.document.create(prov_document, refresh=True,
                                                    name="test_basic_storage: flat_document")
 
-        stored_document.add_bundle(prov_document, identifier="http://example.com/bundle")
+        stored_document.add_bundle(prov_document, identifier="ex:bundle")
 
-        # stored_document.delete()
+        self.assertEqual(stored_document.prov, prov_document)
+
+        stored_document.delete()
