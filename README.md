@@ -98,7 +98,7 @@ for bundle in api.document.get(148).bundles:
 -   property: bundles(BundleManager) -> bundle manager
 
 -   method: refresh() -> refreshes the document to update it with any changes on the server
--   method: add_bundle(&lt;ProvBundle object&gt;, &lt;QName identifier for this bundle&gt;) -> adds a bundle to the document
+-   method: add_bundle(&lt;ProvBundle object&gt;, &lt;string identifier for this bundle&gt;) -> adds a bundle to the document
 -   method: delete() -> permanently deletes the document from the store
 
 ##### Bundle has the following API:
