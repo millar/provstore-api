@@ -13,5 +13,5 @@ setup(name='provstore-api',
         'requests'
     ],
     license="MIT",
-    test_suite='prov.tests',
+    test_suite='provstore.tests',
 )
