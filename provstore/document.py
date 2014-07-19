@@ -38,11 +38,11 @@ class Document(object):
         if not isinstance(other, Document):
             return False
 
-        return self._api == other._api and self._id == other._id
+        return self._api == other._api and self.id == other.id
 
 
     def __ne__(self, other):
-        return self == other
+        return not self == other
 
 
     # Abstract methods
