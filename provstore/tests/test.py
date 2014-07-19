@@ -60,7 +60,7 @@ class ProvStoreAPITests(LoggedInAPITestMixin, unittest.TestCase):
         prov_document = examples.flat_document()
 
         stored_document = self.api.document.create(prov_document, refresh=True,
-                                                    name="test_basic_bundle_storage")
+                                                    name="test_bundle_iteration")
 
         stored_document.add_bundle(prov_document, identifier="ex:bundle-1")
         stored_document.bundles['ex:bundle-2'] = prov_document
@@ -76,10 +76,10 @@ class ProvStoreAPITests(LoggedInAPITestMixin, unittest.TestCase):
         prov_document = examples.flat_document()
 
         stored_document1 = self.api.document.create(prov_document, refresh=True,
-                                                    name="test_basic_bundle_storage")
+                                                    name="test_basic_bundle_retrieval")
 
         stored_document2 = self.api.document.create(prov_document, refresh=True,
-                                                    name="test_basic_bundle_storage")
+                                                    name="test_basic_bundle_retrieval")
 
         retrieved_document = self.api.document.get(stored_document1.id)
 
@@ -87,12 +87,15 @@ class ProvStoreAPITests(LoggedInAPITestMixin, unittest.TestCase):
         self.assertEqual(stored_document1, retrieved_document)
         self.assertNotEqual(stored_document2, retrieved_document)
 
+        stored_document1.delete()
+        stored_document2.delete()
+
 
     def test_non_existent_bundle(self):
         prov_document = examples.flat_document()
 
         stored_document = self.api.document.create(prov_document, refresh=True,
-                                                    name="test_basic_bundle_storage")
+                                                    name="test_non_existent_bundle")
 
         with self.assertRaises(NotFoundException):
             stored_document.bundles['ex:not-there']
@@ -184,7 +187,7 @@ class ProvStoreAPITests(LoggedInAPITestMixin, unittest.TestCase):
     def test_equality(self):
         prov_document = examples.flat_document()
 
-        stored_document = self.api.document.create(prov_document, name="test_immutable_exceptions")
+        stored_document = self.api.document.create(prov_document, name="test_equality")
 
         self.assertFalse(stored_document == "document")
 
