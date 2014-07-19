@@ -21,12 +21,11 @@ api = Api(userame="your_provstore_username", api_key="your_api_key")
 
 *Note: credentials can also be set via the `PROVSTORE_USERNAME` and `PROVSTORE_API_KEY` environment variables and ommited from the initialization.*
 
-For demonstrations purposes we will use the ProvDocuments given in the examples module like so
+For demonstrations purposes we will use the ProvDocuments given in the examples
+module, but you would use your documents instead.
 ```python
 import provstore.tests.examples as examples
 ```
-
-but you would use your documents instead
 
 #### Storing documents
 
