@@ -1,3 +1,4 @@
+import os
 import json
 import requests
 from copy import copy
@@ -44,6 +45,11 @@ class Api(object):
 
         self._username = username
         self._api_key = api_key
+
+        if not self._username:
+            self._username = os.environ.get('PROVSTORE_USERNAME', None)
+        if not self._api_key:
+            self._api_key = os.environ.get('PROVSTORE_API_KEY', None)
 
 
     @property

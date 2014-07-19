@@ -5,7 +5,6 @@ from provstore.api import Api
 import provstore.tests.examples as examples
 
 
-
 PROVSTORE_USERNAME  = os.environ.get('PROVSTORE_USERNAME', 'provstore-api-test')
 PROVSTORE_API_KEY   = os.environ.get('PROVSTORE_API_KEY', '56f7db0b9f1651d2cb0dd9b11c53b5fdc2dcacf4')
 
