@@ -67,6 +67,13 @@ api.document.get(148).add_bundle(prov_bundle, 'ex:bundle-1')
 api.document.get(148).bundles['ex:bundle-1'] = prov_bundle
 ```
 
+#### Fetching bundle
+
+```python
+# Get document's bundle with matching identifier
+api.document.get(148).bundles['ex:bundle-1']
+```
+
 #### Iterating over bundles
 ```python
 # Get document with this ID's bundles
@@ -78,40 +85,24 @@ for bundle in api.document.get(148).bundles:
 ```
 
 
-#### API guidance
-```
-# Document instance has the following API:
-#
-#   property: id(int) -> the document's ID on the Store
-#   property: name(string) -> the document's name on Store
-#   property: public(bool) -> wether the document is publicly visible
-#   property: owner(string) -> owner's username
-#   property: created_at(datetime) -> when the document was uploaded
-#   property: views(int) -> document view count
-#   property: prov(ProvDocument) -> prov model object
-#   property: bundles(BundleManager) -> bundle manager
-#
-#   method: refresh() -> refreshes the document to update it with any changes on the server
-#   method: add_bundle(<ProvBundle object>, <QName identifier for this bundle>) -> adds a bundle to the document
-#   method: delete() -> permanently deletes the document from the store
+#### API
+##### Document has the following API:
 
-# Add a bundle to the document:
-stored_document.add_bundle(prov_bundle, identifier="ex:bundle-1")
+-   property: id(int) -> the document's ID on the Store
+-   property: name(string) -> the document's name on Store
+-   property: public(bool) -> wether the document is publicly visible
+-   property: owner(string) -> owner's username
+-   property: created_at(datetime) -> when the document was uploaded
+-   property: views(int) -> document view count
+-   property: prov(ProvDocument) -> prov model object
+-   property: bundles(BundleManager) -> bundle manager
 
-# or the shorthand:
-stored_document.bundles['ex:bundle-1'] = prov_document
+-   method: refresh() -> refreshes the document to update it with any changes on the server
+-   method: add_bundle(<ProvBundle object>, <QName identifier for this bundle>) -> adds a bundle to the document
+-   method: delete() -> permanently deletes the document from the store
 
-# To later fetch the bundle or retrieve and existing bundle we use its identifier
-stored_bundle = stored_document.bundles['ex:bundle-1']
+##### Bundle has the following API:
 
-# Bundle instance has the following API:
-#
-#   property: identifier(string) -> the bundles's identifier
-#   property: created_at(datetime) -> when the document was uploaded
-#   property: prov(ProvDocument) -> prov model object
-
-# We can iterate over a documents bundles to, for example, print their identifiers:
-for bundle in stored_document.bundles:
-    print bundle.identifier
-    # the bundle's provenance is at:
-    bundle.prov
+-   property: identifier(string) -> the bundles's identifier
+-   property: created_at(datetime) -> when the document was uploaded
+-   property: prov(ProvDocument) -> prov model object
