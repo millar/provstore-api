@@ -110,8 +110,12 @@ for bundle in api.document.get(148).bundles:
 
 ## Contribute
 
-- Issue Tracker: github.com/millar/provstore-api/issues
-- Source Code: github.com/millar/provstore-api
+- Issue Tracker: https://github.com/millar/provstore-api/issues
+- Source Code: https://github.com/millar/provstore-api
+
+## Documentation
+
+- Available on [ReadTheDocs](http://provstore-api.readthedocs.org/en/latest/)
 
 ## License
 
