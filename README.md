@@ -106,3 +106,13 @@ for bundle in api.document.get(148).bundles:
 -   property: identifier(string) -> the bundles's identifier
 -   property: created_at(datetime) -> when the document was uploaded
 -   property: prov(ProvDocument) -> prov model object
+
+
+## Contribute
+
+- Issue Tracker: github.com/millar/provstore-api/issues
+- Source Code: github.com/millar/provstore-api
+
+## License
+
+This project is licensed under the MIT license.
