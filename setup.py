@@ -2,7 +2,7 @@
 from setuptools import setup
 
 setup(name='provstore-api',
-    version='0.1.1',
+    version='0.1.2',
     description='ProvStore API client',
     author='Sam Millar',
     author_email='sam@millar.io',
