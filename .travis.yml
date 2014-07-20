@@ -4,7 +4,7 @@ python:
 
 # Install packages
 install:
-  - pip install prov requests
+  - pip install -r requirements.txt
   - pip install coverage coveralls
 
 # Run test
