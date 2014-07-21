@@ -10,31 +10,24 @@ class NotFoundException(Exception):
     pass
 
 
-"""
-  Usage:
-
-  from provstore import Api
-
-  api = Api()
-
-  document = ProvDocument()
-
-  stored_document = api.document.create(document, name="Given name")
-  stored_document.id
-  stored_document.prov
-
-  read_document = api.document.get(document_id)
-  read_document.add_bundle()
-  # or
-  api.bundle.save(document_id, prov_bundle)
-
-  read_document.bundles['identifier']
-"""
 class Api(object):
+    """
+    Main ProvStore API client object
+
+    Most functions are not used directly but are instead accessed by functions of the Document, BundleManager and Bundle
+    objects.
+
+    To create a new Api object:
+      >>> from provstore.api import Api
+      >>> api = Api(username="provstore username", api_key="api key")
+
+    .. note::
+       The username and api_key parameters can also be omitted in which case the client will look for
+       **PROVSTORE_USERNAME** and **PROVSTORE_API_KEY** environment variables.
+    """
     FORMAT_MAP = {
         'json': 'application/json'
     }
-
 
     def __init__(self,
                  username=None,
@@ -46,7 +39,6 @@ class Api(object):
         else:
             self.base_url = base_url.rstrip('/')
 
-
         self._username = username
         self._api_key = api_key
 
@@ -55,26 +47,22 @@ class Api(object):
         if not self._api_key:
             self._api_key = os.environ.get('PROVSTORE_API_KEY', None)
 
-
     def __eq__(self, other):
         if not isinstance(other, Api):
             return False
 
         return self.base_url == other.base_url
 
-
     def __ne__(self, other):
         return self == other
-
 
     @property
     def document(self):
         return Document(self)
 
-
     @property
     def headers(self):
-        headers = {}
+        headers = dict()
 
         headers['Accept'] = 'application/json'
 
@@ -83,25 +71,22 @@ class Api(object):
 
         return headers
 
-
     def _request(self, method, *args, **kwargs):
         r = requests.request(method, *args, **kwargs)
 
-        # TODO: Catch error reponses and raise our own exceptions
+        # TODO: Catch error responses and raise our own exceptions
 
         if r.status_code == 404:
             raise NotFoundException()
         else:
-          # Fallback
-          r.raise_for_status()
+            # Fallback
+            r.raise_for_status()
 
         return r
-
 
     @property
     def _authorization_header(self):
         return "ApiKey %s:%s" % (self._username, self._api_key)
-
 
     def get_document_prov(self, document_id, prov_format=ProvDocument):
         if prov_format == ProvDocument:
@@ -117,12 +102,10 @@ class Api(object):
         else:
             return r.content
 
-
     def get_document_meta(self, document_id):
         r = self._request('get', self.base_url + "/documents/%i/" % document_id,
                           headers=self.headers)
         return r.json()
-
 
     def post_document(self, prov_document, prov_format, name, public=False):
         headers = copy(self.headers)
@@ -137,7 +120,6 @@ class Api(object):
                           headers=headers)
         return r.json()
 
-
     def add_bundle(self, document_id, prov_bundle, identifier):
         headers = copy(self.headers)
         headers.update({'Content-type': 'application/json'})
@@ -151,13 +133,11 @@ class Api(object):
 
         return True
 
-
     def get_bundles(self, document_id):
         r = self._request('get', self.base_url + "/documents/%i/bundles/" % document_id,
                           headers=self.headers)
 
         return r.json()['objects']
-
 
     def get_bundle(self, document_id, bundle_id, prov_format=ProvDocument):
         if prov_format == ProvDocument:
@@ -172,7 +152,6 @@ class Api(object):
             return ProvDocument.deserialize(content=r.content)
         else:
             return r.content
-
 
     def delete_document(self, document_id):
         r = self._request('delete', self.base_url + "/documents/%i/" % document_id,

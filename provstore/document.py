@@ -1,18 +1,21 @@
-import json
 from prov.model import ProvDocument, parse_xsd_datetime
 from provstore.bundle_manager import BundleManager
+
 
 # Document exceptions
 class DocumentException(Exception):
     pass
 
+
 class AbstractDocumentException(DocumentException):
     def __init__(self):
         self.message = "Unsaved documents cannot be read"
 
+
 class EmptyDocumentException(DocumentException):
     def __init__(self):
         self.message = "There is no data associated with this document"
+
 
 class ImmutableDocumentException(DocumentException):
     def __init__(self):
@@ -43,8 +46,9 @@ class Document(object):
         self._created_at = None
         self._views = None
 
-        self._prov = None
+        self._bundles = None
 
+        self._prov = None
 
     def __eq__(self, other):
         if not isinstance(other, Document):
@@ -52,10 +56,8 @@ class Document(object):
 
         return self._api == other._api and self.id == other.id
 
-
     def __ne__(self, other):
         return not self == other
-
 
     def __repr__(self):
         if self.abstract:
@@ -63,9 +65,7 @@ class Document(object):
         else:
             return "%s/documents/%i" % (self._api.base_url, self.id)
 
-
     # Abstract methods
-
     def create(self, prov_document, prov_format=None, refresh=False, **props):
         """
         Create a document on ProvStore.
@@ -98,14 +98,17 @@ class Document(object):
 
     save = create
 
-
     def set(self, document_id):
+        """
+        Associate this document with a ProvStore document without making any calls to the API.
+        :param int document_id: ID of the document on ProvStore
+        :return: self
+        """
         if not self.abstract:
             raise ImmutableDocumentException()
         self._id = document_id
 
         return self
-
 
     def get(self, document_id):
         """
@@ -119,28 +122,53 @@ class Document(object):
           148
           >>> api.name
           ex:bundles1-sep
+
+        :param document_id: The document ID on ProvStore
+        :return: self
         """
         if not self.abstract:
             raise ImmutableDocumentException()
 
         return self.read(document_id)
 
-
-
-    # Document instance methods
-
+    # Instance methods
     def read(self, document_id=None):
+        """
+        Load the document contents and metadata from the server.
+
+        The following are equivalent::
+          >>> api = Api()
+          >>> api.set(148).read()
+          >>> api.get(148)
+
+        :param document_id: (optional) Set the document ID if this is an abstract document.
+        :return: self
+        """
         self.read_prov(document_id)
         self.read_meta()
         return self
 
-
     def refresh(self):
+        """
+        Update information about the document from ProvStore.
+
+        :return: self
+        """
+
         # We don't alias so that users cannot specify document_id here
         return self.read()
 
-
     def read_prov(self, document_id=None):
+        """
+        Load the provenance of this document
+
+        .. note::
+           This method is called automatically if needed when the :py:meth:`prov` property is accessed. Manual use of
+           this method is unusual.
+
+        :param document_id: (optional) set the document id if this is an :py:meth:`abstract` document
+        :return: :py:class:`prov.model.ProvDocument
+        """
         if document_id:
             if not self.abstract:
                 raise ImmutableDocumentException()
@@ -152,8 +180,17 @@ class Document(object):
         self._prov = self._api.get_document_prov(self.id)
         return self._prov
 
-
     def read_meta(self, document_id=None):
+        """
+        Load metadata associated with the document
+
+        .. note::
+           This method is called automatically if needed when a property is first accessed. You will not normally have
+           to use this method manually.
+
+        :param document_id: (optional) set the document id if this is an :py:meth:`abstract` document
+        :return: self
+        """
         if document_id:
             if not self.abstract:
                 raise ImmutableDocumentException()
@@ -174,23 +211,42 @@ class Document(object):
 
         return self
 
-
     def add_bundle(self, prov_bundle, identifier):
+        """
+        Verbose method of adding a bundle.
+
+        Can also be done as:
+          >>> api = Api()
+          >>> document = api.document.get(148)
+          >>> document.bundles['identifier'] = prov_bundle
+
+        :param prov_bundle: The bundle to be added
+        :param str identifier: URI or QName for this bundle
+        :type prov_bundle: :py:class:`prov.model.ProvDocument` or :py:class:`str`
+        """
         if self.abstract:
             raise AbstractDocumentException()
 
         self._api.add_bundle(self.id, prov_bundle.serialize(), identifier)
 
-
     @property
     def bundles(self):
+        """
+        :return: This document's bundle manager
+        :rtype: :py:class:`provstore.bundle_manager.BundleManager`
+        """
         if self.abstract:
             raise AbstractDocumentException()
 
         return self._bundles
 
-
     def delete(self):
+        """
+        Remove the document and all of its bundles from ProvStore.
+
+        .. warning::
+           Cannot be undone.
+        """
         if self.abstract:
             raise AbstractDocumentException()
 
@@ -198,7 +254,6 @@ class Document(object):
         self._id = None
 
         return True
-
 
     @property
     def id(self):
@@ -209,6 +264,9 @@ class Document(object):
 
     @property
     def abstract(self):
+        """
+        True if this document doesn't reference a ProvStore document yet
+        """
         return self.id is None
 
     @property
@@ -223,7 +281,6 @@ class Document(object):
 
         raise EmptyDocumentException()
 
-
     @property
     def public(self):
         """
@@ -235,7 +292,6 @@ class Document(object):
             return self.read_meta()._public
 
         raise EmptyDocumentException()
-
 
     @property
     def owner(self):
@@ -249,11 +305,11 @@ class Document(object):
 
         raise EmptyDocumentException()
 
-
     @property
     def created_at(self):
         """
-        :py:class:`datetime.datetime` of when the document was created
+        :return: When the document was created
+        :rtype: :py:class:`datetime.datetime`
         """
         if self._created_at:
             return self._created_at
@@ -261,7 +317,6 @@ class Document(object):
             return self.read_meta()._created_at
 
         raise EmptyDocumentException()
-
 
     @property
     def views(self):
@@ -275,7 +330,6 @@ class Document(object):
 
         raise EmptyDocumentException()
 
-
     @property
     def url(self):
         """
@@ -287,7 +341,6 @@ class Document(object):
         """
         if not self.abstract:
             return "%s/documents/%i" % ("/".join(self._api.base_url.split("/")[:-2]), self.id)
-
 
     @property
     def prov(self):

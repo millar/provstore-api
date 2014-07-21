@@ -81,7 +81,7 @@ class ProvStoreAPITests(LoggedInAPITestMixin, unittest.TestCase):
         stored_document2 = self.api.document.create(prov_document, refresh=True,
                                                     name="test_basic_bundle_retrieval")
 
-        retrieved_document = self.api.document.get(stored_document1.id)
+        retrieved_document = self.api.document.set(stored_document1.id)
 
 
         self.assertEqual(stored_document1, retrieved_document)

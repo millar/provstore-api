@@ -1,4 +1,5 @@
-from prov.model import ProvDocument, parse_xsd_datetime
+from prov.model import parse_xsd_datetime
+
 
 class Bundle(object):
     def __init__(self, api, document, bundle):
@@ -11,19 +12,28 @@ class Bundle(object):
 
         self._prov = None
 
-
     @property
     def created_at(self):
+        """
+        :return: When the bundle was added
+        :rtype: :py:class:`datetime.datetime`
+        """
         return self._created_at
-
 
     @property
     def identifier(self):
+        """
+        :return: Identifier of the document, used as index on :py:class:`provstore.bundle_manager.BundleManager`
+        :rtype: str
+        """
         return self._identifier
-
 
     @property
     def prov(self):
+        """
+        :return: This bundle's provenance
+        :rtype: :py:class:`prov.model.ProvDocument`
+        """
         if not self._prov:
             self._prov = self._api.get_bundle(self._document.id, self._id)
 

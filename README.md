@@ -85,29 +85,6 @@ for bundle in api.document.get(148).bundles:
 ```
 
 
-#### API
-##### Document has the following API:
-
--   property: id(int) -> the document's ID on the Store
--   property: name(string) -> the document's name on Store
--   property: public(bool) -> wether the document is publicly visible
--   property: owner(string) -> owner's username
--   property: created_at(datetime) -> when the document was uploaded
--   property: views(int) -> document view count
--   property: prov(ProvDocument) -> prov model object
--   property: bundles(BundleManager) -> bundle manager
-
--   method: refresh() -> refreshes the document to update it with any changes on the server
--   method: add_bundle(&lt;ProvBundle object&gt;, &lt;string identifier for this bundle&gt;) -> adds a bundle to the document
--   method: delete() -> permanently deletes the document from the store
-
-##### Bundle has the following API:
-
--   property: identifier(string) -> the bundles's identifier
--   property: created_at(datetime) -> when the document was uploaded
--   property: prov(ProvDocument) -> prov model object
-
-
 ## Contribute
 
 - Issue Tracker: https://github.com/millar/provstore-api/issues
@@ -116,6 +93,9 @@ for bundle in api.document.get(148).bundles:
 ## Documentation
 
 - Available on [ReadTheDocs](http://provstore-api.readthedocs.org/en/latest/)
+
+### API
+- See the [full API reference](http://provstore-api.readthedocs.org/en/latest/provstore.html)
 
 ## License
 
