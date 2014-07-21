@@ -48,6 +48,8 @@ stored_document = api.document.create(prov_document,
 ```python
 # Get a document with ID 148 from ProvStore:
 stored_document = api.document.get(148)
+# The document's provenance is available like so:
+stored_document.prov
 
 # => This will fetch the document and return a ProvStore Document object
 ```
