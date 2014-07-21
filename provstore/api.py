@@ -87,7 +87,7 @@ class Api(object):
         return self.base_url == other.base_url
 
     def __ne__(self, other):
-        return self == other
+        return not self == other
 
     @property
     def document(self):
