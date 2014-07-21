@@ -22,7 +22,7 @@ class ProvStoreAPITests(LoggedInAPITestMixin, unittest.TestCase):
     def test_basic_storage(self):
         prov_document = examples.flat_document()
 
-        stored_document = self.api.document.create(prov_document, refresh=True,
+        stored_document = self.api.document.create(prov_document,
                                                    name="test_basic_storage")
 
         self.assertEqual(stored_document.prov, prov_document)
@@ -51,7 +51,7 @@ class ProvStoreAPITests(LoggedInAPITestMixin, unittest.TestCase):
     def test_basic_bundle_storage(self):
         prov_document = examples.flat_document()
 
-        stored_document = self.api.document.create(prov_document, refresh=True,
+        stored_document = self.api.document.create(prov_document,
                                                    name="test_basic_bundle_storage")
 
         stored_document.add_bundle(prov_document, identifier="ex:bundle-1")
@@ -75,7 +75,7 @@ class ProvStoreAPITests(LoggedInAPITestMixin, unittest.TestCase):
     def test_bundle_iteration(self):
         prov_document = examples.flat_document()
 
-        stored_document = self.api.document.create(prov_document, refresh=True,
+        stored_document = self.api.document.create(prov_document,
                                                    name="test_bundle_iteration")
 
         stored_document.add_bundle(prov_document, identifier="ex:bundle-1")
@@ -91,10 +91,10 @@ class ProvStoreAPITests(LoggedInAPITestMixin, unittest.TestCase):
     def test_basic_bundle_retrieval(self):
         prov_document = examples.flat_document()
 
-        stored_document1 = self.api.document.create(prov_document, refresh=True,
+        stored_document1 = self.api.document.create(prov_document,
                                                     name="test_basic_bundle_retrieval")
 
-        stored_document2 = self.api.document.create(prov_document, refresh=True,
+        stored_document2 = self.api.document.create(prov_document,
                                                     name="test_basic_bundle_retrieval")
 
         retrieved_document = self.api.document.set(stored_document1.id)
@@ -108,7 +108,7 @@ class ProvStoreAPITests(LoggedInAPITestMixin, unittest.TestCase):
     def test_non_existent_bundle(self):
         prov_document = examples.flat_document()
 
-        stored_document = self.api.document.create(prov_document, refresh=True,
+        stored_document = self.api.document.create(prov_document,
                                                    name="test_non_existent_bundle")
 
         with self.assertRaises(NotFoundException):
@@ -123,7 +123,7 @@ class ProvStoreAPITests(LoggedInAPITestMixin, unittest.TestCase):
     def test_lazy_instantiation_of_props(self):
         prov_document = examples.flat_document()
 
-        stored_document = self.api.document.create(prov_document, refresh=True,
+        stored_document = self.api.document.create(prov_document,
                                                    name="test_lazy_instantiation_of_props")
 
         self.assertEqual(self.api.document.set(stored_document.id).views, 0)
@@ -138,7 +138,7 @@ class ProvStoreAPITests(LoggedInAPITestMixin, unittest.TestCase):
     def test_document_props(self):
         prov_document = examples.flat_document()
 
-        stored_document = self.api.document.create(prov_document, refresh=True,
+        stored_document = self.api.document.create(prov_document,
                                                    name="test_document_props")
 
         self.assertEqual(stored_document.views, 0)

@@ -93,6 +93,8 @@ class Document(object):
 
         if refresh:
             self.refresh()
+        else:
+            self._bundles = BundleManager(self._api, self)
 
         return self
 
