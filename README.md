@@ -8,6 +8,7 @@ Client for the [ProvStore](https://provenance.ecs.soton.ac.uk/store/)'s [API](ht
 pip install provstore-api
 ```
 
+You can view [provstore-api on PyPi's package index](https://pypi.python.org/pypi/provstore-api/)
 ## Usage
 
 To use the client import the API and configure your access credentials:
