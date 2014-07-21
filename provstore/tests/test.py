@@ -2,13 +2,13 @@ import os
 import unittest
 import datetime
 
-from provstore.api import Api, NotFoundException
+from provstore.api import Api, NotFoundException, InvalidCredentialsException, InvalidDataException, ForbiddenException
 from provstore.document import AbstractDocumentException, ImmutableDocumentException, EmptyDocumentException
 import provstore.tests.examples as examples
 
 
-PROVSTORE_USERNAME  = os.environ.get('PROVSTORE_USERNAME', 'provstore-api-test')
-PROVSTORE_API_KEY   = os.environ.get('PROVSTORE_API_KEY', '56f7db0b9f1651d2cb0dd9b11c53b5fdc2dcacf4')
+PROVSTORE_USERNAME = os.environ.get('PROVSTORE_USERNAME', 'provstore-api-test')
+PROVSTORE_API_KEY = os.environ.get('PROVSTORE_API_KEY', '56f7db0b9f1651d2cb0dd9b11c53b5fdc2dcacf4')
 
 
 class LoggedInAPITestMixin(object):
@@ -29,16 +29,33 @@ class ProvStoreAPITests(LoggedInAPITestMixin, unittest.TestCase):
 
         stored_document.delete()
 
+    def test_diff_auth_access(self):
+        prov_document = examples.flat_document()
+
+        # Private
+        stored_document = self.api.document.create(prov_document,
+                                                   name="test_basic_storage")
+
+        public_api = Api()
+
+        with self.assertRaises(ForbiddenException):
+            public_api.document.get(stored_document.id)
+
+        # Public
+        stored_document = self.api.document.create(prov_document,
+                                                   name="test_basic_storage",
+                                                   public=True)
+        document = public_api.document.get(stored_document.id)
+        self.assertEqual(document.id, stored_document.id)
 
     def test_basic_bundle_storage(self):
         prov_document = examples.flat_document()
 
         stored_document = self.api.document.create(prov_document, refresh=True,
-                                                    name="test_basic_bundle_storage")
+                                                   name="test_basic_bundle_storage")
 
         stored_document.add_bundle(prov_document, identifier="ex:bundle-1")
         stored_document.bundles['ex:bundle-2'] = prov_document
-
 
         # should be a match even though we've added a bundle, this is a stale
         # instance
@@ -55,22 +72,21 @@ class ProvStoreAPITests(LoggedInAPITestMixin, unittest.TestCase):
 
         stored_document.delete()
 
-
     def test_bundle_iteration(self):
         prov_document = examples.flat_document()
 
         stored_document = self.api.document.create(prov_document, refresh=True,
-                                                    name="test_bundle_iteration")
+                                                   name="test_bundle_iteration")
 
         stored_document.add_bundle(prov_document, identifier="ex:bundle-1")
         stored_document.bundles['ex:bundle-2'] = prov_document
 
         self.assertEqual(len(stored_document.bundles), 0)
-        self.assertEqual(set([u'ex:bundle-1', u'ex:bundle-2']), set([bundle.identifier for bundle in stored_document.bundles]))
+        self.assertEqual({u'ex:bundle-1', u'ex:bundle-2'},
+                         set([bundle.identifier for bundle in stored_document.bundles]))
         self.assertEqual(len(stored_document.bundles.refresh()), 2)
 
         stored_document.delete()
-
 
     def test_basic_bundle_retrieval(self):
         prov_document = examples.flat_document()
@@ -83,30 +99,26 @@ class ProvStoreAPITests(LoggedInAPITestMixin, unittest.TestCase):
 
         retrieved_document = self.api.document.set(stored_document1.id)
 
-
         self.assertEqual(stored_document1, retrieved_document)
         self.assertNotEqual(stored_document2, retrieved_document)
 
         stored_document1.delete()
         stored_document2.delete()
 
-
     def test_non_existent_bundle(self):
         prov_document = examples.flat_document()
 
         stored_document = self.api.document.create(prov_document, refresh=True,
-                                                    name="test_non_existent_bundle")
+                                                   name="test_non_existent_bundle")
 
         with self.assertRaises(NotFoundException):
             stored_document.bundles['ex:not-there']
 
         stored_document.delete()
 
-
     def test_non_existent_document(self):
         with self.assertRaises(NotFoundException):
-            stored_document = self.api.document.get(-1)
-
+            self.api.document.get(-1)
 
     def test_lazy_instantiation_of_props(self):
         prov_document = examples.flat_document()
@@ -123,7 +135,6 @@ class ProvStoreAPITests(LoggedInAPITestMixin, unittest.TestCase):
 
         stored_document.delete()
 
-
     def test_document_props(self):
         prov_document = examples.flat_document()
 
@@ -139,7 +150,6 @@ class ProvStoreAPITests(LoggedInAPITestMixin, unittest.TestCase):
 
         stored_document.delete()
 
-
     def test_empty_exceptions(self):
         with self.assertRaises(EmptyDocumentException):
             self.api.document.views
@@ -154,7 +164,6 @@ class ProvStoreAPITests(LoggedInAPITestMixin, unittest.TestCase):
         with self.assertRaises(EmptyDocumentException):
             self.api.document.name
 
-
     def test_abstract_exceptions(self):
         prov_document = examples.flat_document()
 
@@ -167,7 +176,6 @@ class ProvStoreAPITests(LoggedInAPITestMixin, unittest.TestCase):
             abstract_document.add_bundle(prov_document, 'ex:bundle')
         self.assertRaises(AbstractDocumentException, abstract_document.read_meta)
         self.assertRaises(AbstractDocumentException, abstract_document.read_prov)
-
 
     def test_immutable_exceptions(self):
         prov_document = examples.flat_document()
@@ -183,7 +191,6 @@ class ProvStoreAPITests(LoggedInAPITestMixin, unittest.TestCase):
 
         stored_document.delete()
 
-
     def test_equality(self):
         prov_document = examples.flat_document()
 
@@ -192,3 +199,21 @@ class ProvStoreAPITests(LoggedInAPITestMixin, unittest.TestCase):
         self.assertFalse(stored_document == "document")
 
         stored_document.delete()
+
+    def test_invalid_name(self):
+        prov_document = examples.flat_document()
+
+        with self.assertRaises(InvalidDataException):
+            self.api.document.create(prov_document, name="")
+
+
+class ProvStoreConfigAPITests(unittest.TestCase):
+    def test_invalid_credentials(self):
+        with self.assertRaises(InvalidCredentialsException):
+            api = Api(username="millar", api_key="bad")
+            api.document.get(148)
+
+    def test_public_access(self):
+        api = Api()
+        stored_document = api.document.get(148)
+        self.assertEqual(stored_document.id, 148)

@@ -6,7 +6,38 @@ from prov.model import ProvDocument
 from provstore.document import Document
 
 
-class NotFoundException(Exception):
+MAX_RETRIES = 3
+
+
+class ProvStoreException(Exception):
+    pass
+
+
+class NotFoundException(ProvStoreException):
+    pass
+
+
+class RequestTimeoutException(ProvStoreException):
+    pass
+
+
+class InvalidCredentialsException(ProvStoreException):
+    pass
+
+
+class ForbiddenException(ProvStoreException):
+    pass
+
+
+class InvalidDataException(ProvStoreException):
+    pass
+
+
+class UnprocessableException(ProvStoreException):
+    pass
+
+
+class DocumentInvalidException(ProvStoreException):
     pass
 
 
@@ -24,6 +55,8 @@ class Api(object):
     .. note::
        The username and api_key parameters can also be omitted in which case the client will look for
        **PROVSTORE_USERNAME** and **PROVSTORE_API_KEY** environment variables.
+
+    To read public documents no credentials need be provided.
     """
     FORMAT_MAP = {
         'json': 'application/json'
@@ -71,15 +104,31 @@ class Api(object):
 
         return headers
 
-    def _request(self, method, *args, **kwargs):
-        r = requests.request(method, *args, **kwargs)
+    def _request(self, method, url, retries=0, *args, **kwargs):
+        try:
+            kwargs.update({'timeout': 30})
+            r = requests.request(method, url, **kwargs)
+        except requests.exceptions.Timeout:
+            if retries < MAX_RETRIES:
+                return self._request(method, *args, retries=retries+1, **kwargs)
+            raise RequestTimeoutException()
 
-        # TODO: Catch error responses and raise our own exceptions
-
-        if r.status_code == 404:
+        if r.status_code == 500:
+            raise ProvStoreException()
+        elif r.status_code == 422:
+            raise UnprocessableException()
+        elif r.status_code == 410:
+            raise DocumentInvalidException()
+        elif r.status_code == 404:
             raise NotFoundException()
+        elif r.status_code == 403:
+            raise ForbiddenException()
+        elif r.status_code == 401:
+            raise InvalidCredentialsException()
+        elif r.status_code == 400:
+            raise InvalidDataException()
         else:
-            # Fallback
+            # Fallback, this should not happen!
             r.raise_for_status()
 
         return r
@@ -113,9 +162,9 @@ class Api(object):
 
         r = self._request('post', self.base_url + '/documents/',
                           data=json.dumps({
-                            'content': prov_document,
-                            'public':  public,
-                            'rec_id':  name
+                              'content': prov_document,
+                              'public':  public,
+                              'rec_id':  name
                           }),
                           headers=headers)
         return r.json()
@@ -124,12 +173,12 @@ class Api(object):
         headers = copy(self.headers)
         headers.update({'Content-type': 'application/json'})
 
-        r = self._request('post', self.base_url + "/documents/%i/bundles/" % document_id,
-                          data=json.dumps({
-                            'content': json.loads(prov_bundle),
-                            'rec_id':  unicode(identifier)
-                          }),
-                          headers=headers)
+        self._request('post', self.base_url + "/documents/%i/bundles/" % document_id,
+                      data=json.dumps({
+                          'content': json.loads(prov_bundle),
+                          'rec_id':  unicode(identifier)
+                      }),
+                      headers=headers)
 
         return True
 
@@ -154,6 +203,6 @@ class Api(object):
             return r.content
 
     def delete_document(self, document_id):
-        r = self._request('delete', self.base_url + "/documents/%i/" % document_id,
-                          headers=self.headers)
+        self._request('delete', self.base_url + "/documents/%i/" % document_id,
+                      headers=self.headers)
         return True
