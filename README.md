@@ -101,3 +101,7 @@ for bundle in api.document.get(148).bundles:
 ## License
 
 This project is licensed under the MIT license.
+
+## Contributors
+
+Sam Millar &lt;http://millar.io&gt;
