@@ -7,6 +7,9 @@ class BundleManager(object):
 
     This is an iterable and will iterate through all of a document's bundles.
 
+    .. note::
+       Iteration is expensive, consider using :py:class:`provstore.document.Document.prov.bundles` instead!
+
     Example getting and adding bundles:
       >>> api = Api()
       >>> api.document.create(prov_document, name="name")

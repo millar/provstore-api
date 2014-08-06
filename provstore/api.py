@@ -105,6 +105,8 @@ class Api(object):
         return headers
 
     def _request(self, method, url, retries=0, *args, **kwargs):
+        url = self.base_url + url
+
         try:
             kwargs.update({'timeout': 30})
             r = requests.request(method, url, **kwargs)
@@ -143,7 +145,7 @@ class Api(object):
         else:
             extension = prov_format
 
-        r = self._request('get', self.base_url + "/documents/%i.%s" % (document_id, extension),
+        r = self._request('get', "/documents/%i.%s" % (document_id, extension),
                           headers=self.headers)
 
         if prov_format == ProvDocument:
@@ -152,7 +154,7 @@ class Api(object):
             return r.content
 
     def get_document_meta(self, document_id):
-        r = self._request('get', self.base_url + "/documents/%i/" % document_id,
+        r = self._request('get', "/documents/%i/" % document_id,
                           headers=self.headers)
         return r.json()
 
@@ -160,7 +162,7 @@ class Api(object):
         headers = copy(self.headers)
         headers.update({'Content-type': self.FORMAT_MAP[prov_format]})
 
-        r = self._request('post', self.base_url + '/documents/',
+        r = self._request('post', '/documents/',
                           data=json.dumps({
                               'content': prov_document,
                               'public':  public,
@@ -173,7 +175,7 @@ class Api(object):
         headers = copy(self.headers)
         headers.update({'Content-type': 'application/json'})
 
-        self._request('post', self.base_url + "/documents/%i/bundles/" % document_id,
+        self._request('post', "/documents/%i/bundles/" % document_id,
                       data=json.dumps({
                           'content': json.loads(prov_bundle),
                           'rec_id':  unicode(identifier)
@@ -183,7 +185,7 @@ class Api(object):
         return True
 
     def get_bundles(self, document_id):
-        r = self._request('get', self.base_url + "/documents/%i/bundles/" % document_id,
+        r = self._request('get', "/documents/%i/bundles/" % document_id,
                           headers=self.headers)
 
         return r.json()['objects']
@@ -194,7 +196,7 @@ class Api(object):
         else:
             extension = prov_format
 
-        r = self._request('get', self.base_url + "/documents/%i/bundles/%i.%s" % (document_id, bundle_id, extension),
+        r = self._request('get', "/documents/%i/bundles/%i.%s" % (document_id, bundle_id, extension),
                           headers=self.headers)
 
         if prov_format == ProvDocument:
@@ -203,6 +205,6 @@ class Api(object):
             return r.content
 
     def delete_document(self, document_id):
-        self._request('delete', self.base_url + "/documents/%i/" % document_id,
+        self._request('delete', "/documents/%i/" % document_id,
                       headers=self.headers)
         return True

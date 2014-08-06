@@ -80,6 +80,7 @@ api.document.get(148).bundles['ex:bundle-1']
 #### Iterating over bundles
 ```python
 # Get document with this ID's bundles
+# WARNING: This is expensive, consider using api.document.get(148).prov.bundles instead
 for bundle in api.document.get(148).bundles:
     # print the bundle's identifier
     print bundle.identifier
